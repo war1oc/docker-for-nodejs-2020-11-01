@@ -1,0 +1,46 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+      args:
+        - APP_ENV
+    command: npm run start:dev
+    ports:
+      - 3000:3000
+    volumes:
+      - ./:/usr/src/app
+      - node_modules:/usr/src/app/node_modules/
+    environment:
+      APP_ENV: development
+      APP_PORT: 3000
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: example_db
+      DB_USER: root
+      DB_PASS: example
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8
+    command: --default-authentication-plugin=mysql_native_password
+    ports:
+      - 3306:3306
+    volumes:
+      - mysqldata:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: example_db
+
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+
+volumes:
+  node_modules:
+  mysqldata:
